@@ -27,6 +27,15 @@ sub readexists {
 }
 
 
+sub readjs {
+  # Only fetches exact matches, regexes are ignored
+  open my $JS, '<:utf8', "$ROOT/data/script.js" or die $!;
+  while(<$JS>) {
+    $used{$1}++ while(/mt\('([a-z0-9_]+)'[,\)]/g);
+  }
+}
+
+
 sub readstats {
   open my $F, '<', '/tmp/vndb-I18N-stats' or die $!;
   while(<$F>) {
@@ -52,6 +61,7 @@ sub printstats {
 }
 
 readexists;
+readjs;
 readstats;
 printstats;
 
