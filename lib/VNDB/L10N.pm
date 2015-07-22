@@ -7,6 +7,8 @@ use warnings;
   use base 'Locale::Maketext';
   use LangFile;
 
+  our %USED;
+
   sub fallback_languages { ('en') };
 
   # used for the language switch interface, language tags must
@@ -14,6 +16,7 @@ use warnings;
   sub languages { qw{ cs de en es hu it nl ru tr uk } }
 
   sub maketext {
+    $USED{$_[1]}++;
     my $r = eval { shift->SUPER::maketext(@_) };
     return $r if defined $r;
     warn "maketext failed for '@_': $@\n";

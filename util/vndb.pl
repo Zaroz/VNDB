@@ -45,6 +45,7 @@ $TUWF::OBJ->{$_} = $S{$_} for (keys %S);
 TUWF::set(
   %O,
   pre_request_handler => \&reqinit,
+  post_request_handler => \&reqdone,
   error_404_handler => \&handle404,
   log_format => \&logformat,
   # for compatibility with YAWF
@@ -58,6 +59,23 @@ TUWF::set(
 );
 TUWF::load_recursive('VNDB::Util', 'VNDB::DB', 'VNDB::Handler');
 TUWF::run();
+
+
+my $I18N_dump;
+my $I18N_reqs;
+sub reqdone {
+  $I18N_dump //= time;
+  $I18N_reqs++;
+  # Dump every 5 minutes, most fastcgi processes live long enough to create a few dumps.
+  if($I18N_dump+5*60 < time) {
+    return if !open my $F, '>>', '/tmp/vndb-I18N-stats';
+    printf $F "REPORT %d %s - %s\n", $I18N_reqs, scalar localtime($I18N_dump), scalar localtime;
+    printf $F "%s %d\n", $_, $VNDB::L10N::USED{$_} for (keys %VNDB::L10N::USED);
+    %VNDB::L10N::USED = ();
+    $I18N_reqs = 0;
+    $I18N_dump = time;
+  }
+}
 
 
 sub reqinit {
