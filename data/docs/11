@@ -606,6 +606,22 @@ however still required.<br />
    that it can use a different algorithm than the search function on the website.
   </td>
  </tr>
+ <tr>
+  <td>tags</td>
+  <td>int<br />array of ints</td>
+  <td>= !=</td>
+  <td>
+   Find VNs by tag. When providing an array of ints, the '=' filter will return
+   VNs that are linked to any (not all) of the given tags, the '!=' filter will
+   return VNs that are not linked to any of the given tags. You can combine
+   multiple tags filters with 'and' and 'or' to get the exact behavior you
+   need.<br />
+   This filter may used cached data, it may take up to 24 hours
+   before a VN will have its tag updated with respect to this filter.<br />
+   Be warned that this filter ignores spoiler settings, fetch the tags
+   associated with the returned VN to verify the spoiler level.
+  </td>
+ </tr>
 </table>
 
 :SUBSUB:get release
@@ -1492,6 +1508,7 @@ however still required.<br />
 </p>
 <b>2.25</b>
 <ul>
+ <li>Add "tags" filter to "get vn"</li>
  <li>Increased connection limit per IP from 5 to 10</li>
  <li>Increased command limit from 100 to 200 commands per 10 minutes</li>
  <li>Added support for TLS</li>

@@ -36,7 +36,7 @@ my %O = (
   default_results => 10,
   throttle_cmd => [ 3, 200 ], # interval between each command, allowed burst
   throttle_sql => [ 60, 1 ],  # sql time multiplier, allowed burst (in sql time)
-  throttle_thr => [ 2, 10 ],  # interval between "throttled" replies, allowed burst
+  throttle_thr => [ 1, 20 ],  # interval between "throttled" replies, allowed burst
   tls_options => undef, # Set to AnyEvent::TLS options to enable TLS
 );
 
@@ -537,7 +537,11 @@ my %GET_VN = (
     search => [
       [ str   => '(:value:)', {'~',1}, split => \&normalize_query,
                   join => ' AND ', serialize => 'v.c_search LIKE :value:', process => \'like' ],
-    ]
+    ],
+    tags => [
+      [ int   => 'v.id :op:(SELECT vid FROM tags_vn_inherit WHERE tag = :value:)',   {'=' => 'IN', '!=' => 'NOT IN'}, range => [1,1e6] ],
+      [ inta  => 'v.id :op:(SELECT vid FROM tags_vn_inherit WHERE tag IN(:value:))', {'=' => 'IN', '!=' => 'NOT IN'}, join => ',', range => [1,1e6] ],
+    ],
   },
 );
 
@@ -726,7 +730,7 @@ my %GET_PRODUCER = (
   filters => {
     id => [
       [ 'int' => 'p.id :op: :value:', {qw|= =  != <>  > >  < <  <= <=  >= >=|}, range => [1,1e6] ],
-      [ inta  => 'p.id :op:(:value:)', {'=' => 'IN', '!= ' => 'NOT IN'}, join => ',', range => [1,1e6] ],
+      [ inta  => 'p.id :op:(:value:)', {'=' => 'IN', '!=' => 'NOT IN'}, join => ',', range => [1,1e6] ],
     ],
     name => [
       [ str   => 'p.name :op: :value:', {qw|= =  != <>|} ],
@@ -809,7 +813,7 @@ my %GET_CHARACTER = (
   filters => {
     id => [
       [ 'int' => 'c.id :op: :value:', {qw|= =  != <>  > >  < <  <= <=  >= >=|}, range => [1,1e6] ],
-      [ inta  => 'c.id :op:(:value:)', {'=' => 'IN', '!= ' => 'NOT IN'}, range => [1,1e6], join => ',' ],
+      [ inta  => 'c.id :op:(:value:)', {'=' => 'IN', '!=' => 'NOT IN'}, range => [1,1e6], join => ',' ],
     ],
     name => [
       [ str   => 'c.name :op: :value:', {qw|= =  != <>|} ],
