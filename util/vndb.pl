@@ -15,7 +15,7 @@ BEGIN { ($ROOT = abs_path $0) =~ s{/util/vndb\.pl$}{}; }
 use lib $ROOT.'/lib';
 
 
-use TUWF ':html', 'kv_validate';
+use TUWF ':html';
 use SkinFile;
 
 

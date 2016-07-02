@@ -4,6 +4,7 @@ package VNDB::Util::ValidateTemplates;
 
 use strict;
 use warnings;
+use TUWF 'kv_validate';
 use VNDB::Func 'json_decode';
 use VNDBUtil 'gtintype';
 use Time::Local 'timegm';
