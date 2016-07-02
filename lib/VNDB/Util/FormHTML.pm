@@ -52,6 +52,7 @@ sub htmlFormError {
         li "$field may only contain lowercase alphanumeric characters and a hyphen" if $rule eq 'uname';
         li 'Invalid JAN/UPC/EAN' if $rule eq 'gtin';
         li "$field: Malformed data or invalid input" if $rule eq 'json';
+        li 'Invalid release date' if $rule eq 'rdate';
         if($rule eq 'editsum') {
           li; lit 'Please read <a href="/d5.4">the guidelines</a> on how to use the edit summary.'; end;
         }

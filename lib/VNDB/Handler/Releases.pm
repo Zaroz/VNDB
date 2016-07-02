@@ -305,7 +305,7 @@ sub edit {
       { post => 'catalog',   required => 0, default => '', maxlength => 50 },
       { post => 'languages', multi => 1, enum => [ keys %{$self->{languages}} ] },
       { post => 'website',   required => 0, default => '', maxlength => 250, template => 'weburl' },
-      { post => 'released',  required => 0, default => 0, template => 'uint' },
+      { post => 'released',  required => 0, default => 0, template => 'rdate' },
       { post => 'minage' ,   required => 0, default => -1, enum => $self->{age_ratings} },
       { post => 'notes',     required => 0, default => '', maxlength => 10240 },
       { post => 'platforms', required => 0, default => '', multi => 1, enum => [ keys %{$self->{platforms}} ] },
