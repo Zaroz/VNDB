@@ -32,7 +32,7 @@ function vncLoad() {
 
   // dropdown search
   dsInit(byId('cast_input'), '/xml/staff.xml?q=', function(item, tr) {
-    tr.appendChild(tag('td', { style: 'text-align: right; padding-right: 5px'}, 's'+item.getAttribute('id')));
+    tr.appendChild(tag('td', { style: 'text-align: right; padding-right: 5px'}, 's'+item.getAttribute('sid')));
     tr.appendChild(tag('td', item.firstChild.nodeValue));
   }, vncFormAdd);
 }
@@ -84,7 +84,7 @@ function vncAdd(seiyuu, chr, note) {
 function vncFormAdd(item) {
   var chr = byId('cast_chars').value;
   if (chr) {
-    var s = { id:item.getAttribute('id'), aid:item.getAttribute('aid'), name:item.firstChild.nodeValue };
+    var s = { id:item.getAttribute('sid'), aid:item.getAttribute('id'), name:item.firstChild.nodeValue };
     vncAdd(s, chr, '');
   } else
     alert('Select character first please.');

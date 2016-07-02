@@ -17,7 +17,7 @@ function vnsLoad() {
 
   // dropdown search
   dsInit(byId('credit_input'), '/xml/staff.xml?q=', function(item, tr) {
-    tr.appendChild(tag('td', { style: 'text-align: right; padding-right: 5px'}, 's'+item.getAttribute('id')));
+    tr.appendChild(tag('td', { style: 'text-align: right; padding-right: 5px'}, 's'+item.getAttribute('sid')));
     tr.appendChild(tag('td', item.firstChild.nodeValue));
   }, vnsFormAdd);
 }
@@ -94,7 +94,7 @@ function vnsDel() {
 }
 
 function vnsFormAdd(item) {
-  var s = { id:item.getAttribute('id'), aid:item.getAttribute('aid'), name:item.firstChild.nodeValue };
+  var s = { id:item.getAttribute('sid'), aid:item.getAttribute('id'), name:item.firstChild.nodeValue };
   vnsAdd(s, 'staff', '');
   return '';
 }

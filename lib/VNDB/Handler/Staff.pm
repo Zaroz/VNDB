@@ -388,7 +388,7 @@ sub staffxml {
   xml;
   tag 'staff', more => $np ? 'yes' : 'no';
    for(@$list) {
-     tag 'item', id => $_->{id}, aid => $_->{aid}, $_->{name};
+     tag 'item', sid => $_->{id}, id => $_->{aid}, $_->{name};
    }
   end;
 }
