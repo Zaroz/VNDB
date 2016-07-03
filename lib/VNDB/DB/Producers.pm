@@ -8,7 +8,7 @@ use Exporter 'import';
 our @EXPORT = qw|dbProducerGet dbProducerGetRev dbProducerRevisionInsert|;
 
 
-# options: results, page, id, search, char
+# options: results, page, id, search, char, sort
 # what: extended relations relgraph
 sub dbProducerGet {
   my $self = shift;
@@ -40,13 +40,19 @@ sub dbProducerGet {
   $select .= ', p.desc, p.alias, p.website, p.l_wp, p.hidden, p.locked' if $o{what} =~ /extended/;
   $select .= ', pg.svg' if $o{what} =~ /relgraph/;
 
-  my($r, $np) = $self->dbPage(\%o, q|
+  my($order, @order) = ('p.name');
+  if($o{sort} && $o{sort} eq 'search') {
+    $order = 'least(substr_score(p.name, ?), substr_score(p.original, ?)), p.name';
+    @order = ($o{search}) x 2;
+  }
+
+  my($r, $np) = $self->dbPage(\%o, qq|
     SELECT !s
       FROM producers p
       !s
       !W
-      ORDER BY p.name ASC|,
-    $select, $join, \%where,
+      ORDER BY $order|,
+    $select, $join, \%where, @order
   );
 
   return _enrich($self, $r, $np, 0, $o{what});

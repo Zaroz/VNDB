@@ -370,24 +370,10 @@ sub staffxml {
   my $q = $self->formValidate({ get => 'q', required => 0, maxlength => 500 });
   return $self->resNotFound if $q->{_err} || !$q->{q};
 
-  # Prefixing name with '=' forces exact matching, old behaviour, not very useful anymore.
-  my $exact = $q->{q} =~ s/^=//;
-
-  # Try exact match first, so exact match is always first result
   my($list, $np) = $self->dbStaffGet(
+    $q->{q} =~ /^s([1-9]\d*)/ ? (id => $1) : $q->{q} =~ /^=(.+)/ ? (exact => $1) : (search => $q->{q}, sort => 'search'),
     results => 10, page => 1,
-    $q->{q} =~ /^s([1-9]\d*)/ ? (id => $1) : (exact => $q->{q}),
   );
-
-  # Append results of a substring match
-  if(!$np && !$exact) {
-    my($nlist, $nnp) = $self->dbStaffGet(
-      results => 10-@$list, page => 1, search => $q->{q},
-      notid => [ map $_->{id}, @$list ],
-    );
-    $np = $nnp;
-    $list = [ @$list, @$nlist ];
-  }
 
   $self->resHeader('Content-type' => 'text/xml; charset=UTF-8');
   xml;

@@ -406,7 +406,7 @@ sub pxml {
   $q = $q->{q};
 
   my($list, $np) = $self->dbProducerGet(
-    $q =~ /^p([1-9]\d*)/ ? (id => $1) : (search => $q),
+    $q =~ /^p([1-9]\d*)/ ? (id => $1) : (search => $q, sort => 'search'),
     results => 10,
     page => 1,
   );

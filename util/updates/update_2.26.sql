@@ -33,3 +33,14 @@ ALTER TABLE threads_poll_votes       ADD CONSTRAINT threads_poll_votes_optid_fke
 
 -- Tagalog language
 ALTER TYPE language ADD VALUE 'ta' BEFORE 'tr';
+
+
+-- Improved substring search relevance
+CREATE OR REPLACE FUNCTION substr_score(str text, pattern text) RETURNS integer AS $$
+SELECT CASE
+  WHEN str ILIKE      pattern      THEN 0
+  WHEN str ILIKE      pattern||'%' THEN 1
+  WHEN str ILIKE '%'||pattern||'%' THEN 2
+  ELSE 3
+END;
+$$ LANGUAGE SQL;

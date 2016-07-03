@@ -31,6 +31,21 @@ CREATE OR REPLACE FUNCTION strip_spoilers(t text) RETURNS text AS $$
 $$ LANGUAGE sql IMMUTABLE;
 
 
+-- Assigns a score to the relevance of a substring match, intended for use in
+-- an ORDER BY clause. Exact matches are ordered first, prefix matches after
+-- that, and finally a normal substring match. Not particularly fast, but
+-- that's to be expected of naive substring searches.
+-- Pattern must be escaped for use as a LIKE pattern.
+CREATE OR REPLACE FUNCTION substr_score(str text, pattern text) RETURNS integer AS $$
+SELECT CASE
+  WHEN str ILIKE      pattern      THEN 0
+  WHEN str ILIKE      pattern||'%' THEN 1
+  WHEN str ILIKE '%'||pattern||'%' THEN 2
+  ELSE 3
+END;
+$$ LANGUAGE SQL;
+
+
 -- update_vncache(id) - updates some c_* columns in the vn table
 CREATE OR REPLACE FUNCTION update_vncache(integer) RETURNS void AS $$
   UPDATE vn SET

@@ -15,7 +15,7 @@ our @EXPORT = qw|dbTraitGet dbTraitEdit dbTraitAdd|;
 
 # Options: id noid search name state what results page sort reverse
 # what: parents childs(n) addedby
-# sort: id name name added items
+# sort: id name name added items search
 sub dbTraitGet {
   my $self = shift;
   my %o = (
@@ -30,8 +30,7 @@ sub dbTraitGet {
   my %where = (
     $o{id}    ? ( 't.id IN(!l)' => [ ref($o{id}) ? $o{id} : [$o{id}] ]) : (),
     $o{group} ? ( 't.group = ?' => $o{group} ) : (),
-    $o{noid} && ref($o{noid}) && @{$o{noid}} ? ('t.id NOT IN(!l)', [$o{noid}]) : (),
-    $o{noid} && !ref($o{noid})               ? ('t.id <> ?' => $o{noid}) : (),
+    $o{noid}  ? ( 't.id <> ?' => $o{noid} ) : (),
     defined $o{state} && $o{state} != -1 ? (
       't.state = ?' => $o{state} ) : (),
     !defined $o{state} && !$o{id} && !$o{name} ? (
@@ -56,15 +55,17 @@ sub dbTraitGet {
     group => 'tg."order" %s, t.name %1$s',
     added => 't.added %s',
     items => 't.c_items %s',
+    search=> 'substr_score(t.name, ?) ASC, t.name %s', # Can't score aliases at the moment
   }->{ $o{sort}||'id' }, $o{reverse} ? 'DESC' : 'ASC';
+  my @order = $o{sort} && $o{sort} eq 'search' ? ($o{search}) : ();
 
-  my($r, $np) = $self->dbPage(\%o, q|
+  my($r, $np) = $self->dbPage(\%o, qq|
     SELECT !s
       FROM traits t
       !s
       !W
-      ORDER BY !s|,
-    join(', ', @select), join(' ', @join), \%where, $order
+      ORDER BY $order|,
+    join(', ', @select), join(' ', @join), \%where, @order,
   );
 
   if($o{what} =~ /parents\((\d+)\)/) {

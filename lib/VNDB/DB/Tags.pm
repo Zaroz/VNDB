@@ -10,7 +10,7 @@ our @EXPORT = qw|dbTagGet dbTTTree dbTagEdit dbTagAdd dbTagMerge dbTagLinks dbTa
 
 # %options->{ id noid name search state meta page results what sort reverse  }
 # what: parents childs(n) aliases addedby
-# sort: id name added items
+# sort: id name added items search
 sub dbTagGet {
   my $self = shift;
   my %o = (
@@ -50,15 +50,18 @@ sub dbTagGet {
     name  => 't.name %s',
     added => 't.added %s',
     items => 't.c_items %s',
+    search=> 'substr_score(t.name, ?) ASC, t.name %s',  # Assigning a matching score for aliases is also possible, but more involved
   }->{ $o{sort}||'id' }, $o{reverse} ? 'DESC' : 'ASC';
+  my @order = $o{sort} && $o{sort} eq 'search' ? ($o{search}) : ();
 
-  my($r, $np) = $self->dbPage(\%o, q|
+
+  my($r, $np) = $self->dbPage(\%o, qq|
     SELECT !s
       FROM tags t
       !s
       !W
-      ORDER BY !s|,
-    join(', ', @select), join(' ', @join), \%where, $order
+      ORDER BY $order|,
+    join(', ', @select), join(' ', @join), \%where, @order
   );
 
   if(@$r && $o{what} =~ /aliases/) {

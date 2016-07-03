@@ -7,7 +7,7 @@ use Exporter 'import';
 
 our @EXPORT = qw|dbStaffGet dbStaffGetRev dbStaffRevisionInsert dbStaffAliasIds|;
 
-# options: results, page, id, aid, search, exact, truename, role, gender, notid
+# options: results, page, id, aid, search, exact, truename, role, gender
 # what: extended changes roles aliases
 sub dbStaffGet {
   my $self = shift;
@@ -35,7 +35,6 @@ sub dbStaffGet {
     $o{id}  ? ( ref $o{id}  ? ('s.id IN(!l)'  => [$o{id}])  : ('s.id = ?' => $o{id}) ) : (),
     $o{aid} ? ( ref $o{aid} ? ('sa.aid IN(!l)' => [$o{aid}]) : ('sa.aid = ?' => $o{aid}) ) : (),
     $o{id} || $o{truename} ? ( 's.aid = sa.aid' => 1 ) : (),
-    $o{notid} && @{$o{notid}} ? ('s.id NOT IN(!l)' => [$o{notid}]) : (),
     defined $o{gender} ? ( 's.gender IN(!l)' => [ ref $o{gender} ? $o{gender} : [$o{gender}] ]) : (),
     defined $o{lang}   ? ( 's.lang IN(!l)'   => [ ref $o{lang}   ? $o{lang}   : [$o{lang}]   ]) : (),
     defined $o{role} ? (
@@ -60,13 +59,19 @@ sub dbStaffGet {
   my $select = 's.id, sa.aid, sa.name, sa.original, s.gender, s.lang';
   $select .= ', s.desc, s.l_wp, s.l_site, s.l_twitter, s.l_anidb, s.hidden, s.locked' if $o{what} =~ /extended/;
 
-  my($r, $np) = $self->dbPage(\%o, q|
+  my($order, @order) = ('sa.name');
+  if($o{sort} && $o{sort} eq 'search') {
+    $order = 'least(substr_score(sa.name, ?), substr_score(sa.original, ?)), sa.name';
+    @order = ($o{search}) x 2;
+  }
+
+  my($r, $np) = $self->dbPage(\%o, qq|
     SELECT !s
       FROM staff s
       JOIN staff_alias sa ON sa.id = s.id
       !W
-      ORDER BY sa.name|,
-    $select, \%where
+      ORDER BY $order|,
+    $select, \%where, @order
   );
 
   return _enrich($self, $r, $np, 0, $o{what});

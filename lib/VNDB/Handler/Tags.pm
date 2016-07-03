@@ -743,7 +743,7 @@ sub tagxml {
   return $self->resNotFound if $f->{_err} || (!$f->{q} && !$f->{id} && !$f->{id}[0]);
 
   my($list, $np) = $self->dbTagGet(
-    !$f->{q} ? () : $f->{q} =~ /^g([1-9]\d*)/ ? (id => $1) : $f->{q} =~ /^name:(.+)$/ ? (name => $1) : (search => $f->{q}),
+    !$f->{q} ? () : $f->{q} =~ /^g([1-9]\d*)/ ? (id => $1) : $f->{q} =~ /^=(.+)$/ ? (name => $1) : (search => $f->{q}, sort => 'search'),
     $f->{id} && $f->{id}[0] ? (id => $f->{id}) : (),
     results => 15,
     page => 1,

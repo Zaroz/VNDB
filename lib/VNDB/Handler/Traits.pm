@@ -409,25 +409,13 @@ sub traitxml {
   );
   return $self->resNotFound if $f->{_err} || (!$f->{q} && !$f->{id} && !$f->{id}[0]);
 
-  # First try an exact match
   my($list, $np) = $self->dbTraitGet(
-    !$f->{q} ? () : $f->{q} =~ /^i([1-9]\d*)/ ? (id => $1)  : (name => $f->{q}),
-    $f->{id} && $f->{id}[0] ? (id => $f->{id}) : (),
     results => $f->{r},
     page => 1,
-    sort => 'group'
+    sort => 'group',
+    !$f->{q} ? () : $f->{q} =~ /^i([1-9]\d*)/ ? (id => $1) : (search => $f->{q}, sort => 'search'),
+    $f->{id} && $f->{id}[0] ? (id => $f->{id}) : (),
   );
-
-  # Fill up the results with substring matches
-  if(!$np && $f->{q} && !($f->{id} && $f->{id}[0])) {
-    my($nlist, $nnp) = $self->dbTraitGet(
-      results => $f->{r}-@$list, page => 1,
-      search => $f->{q}, sort => 'group',
-      noid => [ map $_->{id}, @$list ]
-    );
-    $np = $nnp;
-    $list = [ @$list, @$nlist ];
-  }
 
   $self->resHeader('Content-type' => 'text/xml; charset=UTF-8');
   xml;
