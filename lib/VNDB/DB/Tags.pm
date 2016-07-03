@@ -111,9 +111,10 @@ sub dbTTTree {
     $id ? {'id = ?' => $id} : {"NOT EXISTS(SELECT 1 FROM ${type}s_parents WHERE $type = id)" => 1, 'state = 2' => 1},
     !$back ? ('tp.parent = tt.id', "t.id = tp.$type") : ("tp.$type = tt.id", 't.id = tp.parent')
   );
-  for my $i (@$r) {
-    $i->{'sub'} = [ grep $_->{parent} == $i->{id}, @$r ];
-  }
+
+  my %pars; # parent-id -> [ child-object, .. ]
+  push @{$pars{$_->{parent}}}, $_ for(@$r);
+  $_->{'sub'} = $pars{$_->{id}} || [] for(@$r);
   my @r = grep !delete($_->{parent}), @$r;
   return $id ? $r[0]{'sub'} : \@r;
 }
