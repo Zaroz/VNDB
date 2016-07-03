@@ -101,7 +101,7 @@ function tglAdd() {
   tg.disabled = add.disabled = true;
   add.value = 'Loading...';
 
-  ajax('/xml/tags.xml?q=name:'+encodeURIComponent(tg.value), function(hr) {
+  ajax('/xml/tags.xml?q=='+encodeURIComponent(tg.value), function(hr) {
     tg.disabled = add.disabled = false;
     tg.value = '';
     add.value = 'Add tag';
