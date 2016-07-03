@@ -19,6 +19,7 @@ function vnsLoad() {
   dsInit(byId('credit_input'), '/xml/staff.xml?q=', function(item, tr) {
     tr.appendChild(tag('td', { style: 'text-align: right; padding-right: 5px'}, 's'+item.getAttribute('sid')));
     tr.appendChild(tag('td', item.firstChild.nodeValue));
+    tr.appendChild(tag('td', item.getAttribute('orig')));
   }, vnsFormAdd);
 }
 

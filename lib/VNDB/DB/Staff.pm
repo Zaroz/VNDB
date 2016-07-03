@@ -7,7 +7,7 @@ use Exporter 'import';
 
 our @EXPORT = qw|dbStaffGet dbStaffGetRev dbStaffRevisionInsert dbStaffAliasIds|;
 
-# options: results, page, id, aid, search, exact, truename, role, gender
+# options: results, page, id, aid, search, exact, truename, role, gender, notid
 # what: extended changes roles aliases
 sub dbStaffGet {
   my $self = shift;
@@ -35,6 +35,7 @@ sub dbStaffGet {
     $o{id}  ? ( ref $o{id}  ? ('s.id IN(!l)'  => [$o{id}])  : ('s.id = ?' => $o{id}) ) : (),
     $o{aid} ? ( ref $o{aid} ? ('sa.aid IN(!l)' => [$o{aid}]) : ('sa.aid = ?' => $o{aid}) ) : (),
     $o{id} || $o{truename} ? ( 's.aid = sa.aid' => 1 ) : (),
+    $o{notid} && @{$o{notid}} ? ('s.id NOT IN(!l)' => [$o{notid}]) : (),
     defined $o{gender} ? ( 's.gender IN(!l)' => [ ref $o{gender} ? $o{gender} : [$o{gender}] ]) : (),
     defined $o{lang}   ? ( 's.lang IN(!l)'   => [ ref $o{lang}   ? $o{lang}   : [$o{lang}]   ]) : (),
     defined $o{role} ? (
@@ -43,7 +44,7 @@ sub dbStaffGet {
         $seiyuu ? ( 'EXISTS(SELECT 1 FROM vn_seiyuu vsy JOIN vn v ON v.id = vsy.id WHERE vsy.aid = sa.aid AND NOT v.hidden)' ) : ()
       ).')' => ( @roles ? [ \@roles ] : 1 ),
     ) : (),
-    $o{exact} ? ( '(sa.name = ? OR sa.original = ?)' => [ ($o{exact}) x 2 ] ) : (),
+    $o{exact} ? ( '(lower(sa.name) = lower(?) OR lower(sa.original) = lower(?))' => [ ($o{exact}) x 2 ] ) : (),
     $o{search} ?
       $o{search} =~ /[\x{3000}-\x{9fff}\x{ff00}-\x{ff9f}]/ ?
         # match against 'original' column only if search string contains any

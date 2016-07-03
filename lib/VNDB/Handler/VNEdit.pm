@@ -331,7 +331,7 @@ sub _form {
       h2 'Add staff';
       table; Tr;
        td class => 'tc_staff';
-        input id => 'credit_input', type => 'text', class => 'text'; end;
+        input id => 'credit_input', type => 'text', class => 'text', style => 'width: 300px'; end;
        td colspan => 3, '';
       end; end;
   }]],
@@ -370,7 +370,7 @@ sub _form {
         txt ' voiced by';
        end;
        td class => 'tc_staff';
-        input id => 'cast_input', type => 'text', class => 'text';
+        input id => 'cast_input', type => 'text', class => 'text', style => 'width: 300px';
        end;
        td colspan => 2, '';
       end; end;
