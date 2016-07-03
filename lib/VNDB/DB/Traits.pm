@@ -30,7 +30,8 @@ sub dbTraitGet {
   my %where = (
     $o{id}    ? ( 't.id IN(!l)' => [ ref($o{id}) ? $o{id} : [$o{id}] ]) : (),
     $o{group} ? ( 't.group = ?' => $o{group} ) : (),
-    $o{noid}  ? ( 't.id <> ?' => $o{noid} ) : (),
+    $o{noid} && ref($o{noid}) && @{$o{noid}} ? ('t.id NOT IN(!l)', [$o{noid}]) : (),
+    $o{noid} && !ref($o{noid})               ? ('t.id <> ?' => $o{noid}) : (),
     defined $o{state} && $o{state} != -1 ? (
       't.state = ?' => $o{state} ) : (),
     !defined $o{state} && !$o{id} && !$o{name} ? (
