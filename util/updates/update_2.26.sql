@@ -44,3 +44,7 @@ SELECT CASE
   ELSE 3
 END;
 $$ LANGUAGE SQL;
+
+
+-- Thai language
+ALTER TYPE language ADD VALUE 'th' BEFORE 'tr';

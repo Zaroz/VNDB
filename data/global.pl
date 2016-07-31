@@ -72,6 +72,7 @@ our %S;
     sk Slovak
     sv Swedish
     ta Tagalog
+    th Thai
     tr Turkish
     uk Ukrainian
     vi Vietnamese
