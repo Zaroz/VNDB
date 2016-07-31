@@ -545,9 +545,12 @@ CREATE TABLE traits (
 );
 
 -- traits_chars
+-- This table is a cache for the data in chars_traits and includes child traits
+-- into parent traits. In order to improve performance, there are no foreign
+-- key constraints on this table.
 CREATE TABLE traits_chars (
-  cid integer NOT NULL,
-  tid integer NOT NULL,
+  cid integer NOT NULL,  -- chars (id)
+  tid integer NOT NULL,  -- traits (id)
   spoil smallint NOT NULL DEFAULT 0,
   PRIMARY KEY(cid, tid)
 );

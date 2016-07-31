@@ -48,3 +48,9 @@ $$ LANGUAGE SQL;
 
 -- Thai language
 ALTER TYPE language ADD VALUE 'th' BEFORE 'tr';
+
+
+-- Improve performance for traits_chars calculation
+ALTER TABLE traits_chars DROP CONSTRAINT traits_chars_cid_fkey;
+ALTER TABLE traits_chars DROP CONSTRAINT traits_chars_tid_fkey;
+CREATE INDEX traits_chars_tid ON traits_chars (tid);
