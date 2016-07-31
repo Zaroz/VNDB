@@ -313,12 +313,11 @@ sub _form {
     [ json   => short => 'credits' ],
     [ static => nolabel => 1, content => sub {
       # propagate staff ids and names to javascript
-      my %staff_data;
-      for my $c (@{$v->{credits}}, @{$v->{seiyuu}}) {
-        $staff_data{$c->{aid}} //= { map +($_ => $c->{$_}), qw|id aid name| };
-      }
-      script_json staffdata => \%staff_data;
-
+      my @alist = map $_->{aid}, @{$frm->{credits}}, @{$frm->{seiyuu}};
+      script_json staffdata => {
+         map +($_->{aid}, {id => $_->{id}, aid => $_->{aid}, name => $_->{name}}),
+         @alist ? @{$self->dbStaffGet(aid => \@alist, results => 200)} : ()
+      };
       div class => 'warning';
        lit 'Please check the <a href="/d2.3">staff editing guidelines</a>. You can'
          .' <a href="/s/new">create a new staff entry</a> if it is not in the database yet,'
