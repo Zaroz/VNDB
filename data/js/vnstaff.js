@@ -13,7 +13,7 @@ function vnsLoad() {
   }
   vnsEmpty();
 
-  onSubmit(byName(byId('maincontent'), 'form')[0], vnsSerialize);
+  onSubmit(byName(byId('maincontent'), 'form')[0], vnsCheckAndSerialize);
 
   // dropdown search
   dsInit(byId('credit_input'), '/xml/staff.xml?q=', function(item, tr) {
@@ -82,6 +82,25 @@ function vnsSerialize() {
   }
   byId('credits').value = JSON.stringify(c);
   return true;
+}
+
+function vnsCheckAndSerialize() {
+  var l = byName(byId('credits_tbl'), 'tr');
+  var tbl = {};
+  for (var i = 0; i < l.length; i++) {
+    if(l[i].id == 'credits_tr_none')
+      continue;
+    var aid  = byName(byClass(l[i], 'tc_name')[0], 'input')[0];
+    var name = byName(byClass(l[i], 'tc_name')[0], 'a')[0];
+    var role = byName(byClass(l[i], 'tc_role')[0], 'select')[0];
+    var idx = aid.value + ' ' + role.value;
+    if(tbl[idx]) {
+      alert("Invalid input in staff listing: '" + name.innerText + "' is credited multiple times with '" + role.options[role.selectedIndex].value + "'.");
+      return false;
+    }
+    tbl[idx] = 1;
+  }
+  return vnsSerialize();
 }
 
 function vnsDel() {
