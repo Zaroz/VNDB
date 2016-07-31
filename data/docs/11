@@ -1167,10 +1167,10 @@ however still required.<br />
  </tr>
  <tr class="odd">
   <td>vn</td>
-  <td>id</td>
+  <td>integer<br />array of integers</td>
   <td>=</td>
-  <td>Find characters linked to the given visual novel ID. Note that this may
-    also include characters that are normally hidden by spoiler settings.
+  <td>Find characters linked to the given visual novel ID(s). Note that this
+    may also include characters that are normally hidden by spoiler settings.
   </td>
  </tr>
 </table>
