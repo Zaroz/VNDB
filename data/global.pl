@@ -57,6 +57,7 @@ our %S;
     fi Finnish
     fr French
     he Hebrew
+    hr Croatian
     hu Hungarian
     id Indonesian
     it Italian
