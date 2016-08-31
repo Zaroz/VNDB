@@ -835,10 +835,29 @@ my %GET_CHARACTER = (
 );
 
 
-# the uid filter for votelist/vnlist/wishlist. Needs special care to handle the 'uid=0' case.
-my $UID_FILTER =
-  [ 'int' => 'uid :op: :value:', {qw|= =|}, range => [0,1e6], process =>
-      sub { my($uid, $c) = @_; !$uid && !$c->{uid} ? \'Not logged in.' : $uid || $c->{uid} } ];
+# All user ID filters consider uid=0 to be the logged in user. Needs a special processing function to handle that.
+sub subst_user_id { my($id, $c) = @_; !$id && !$c->{uid} ? \'Not logged in.' : $id || $c->{uid} }
+
+my %GET_USER = (
+  sql     => "SELECT %s FROM users u WHERE (%s) %s",
+  select  => "id, username",
+  proc    => sub {
+    $_[0]{id}*=1;
+  },
+  sortdef => 'id',
+  sorts   => { id => 'id %s' },
+  flags   => { basic => {} },
+  filters => {
+    id => [
+      [ 'int' => 'u.id :op: :value:', {qw|= =|}, range => [0,1e6], process => \&subst_user_id ],
+      [ inta  => 'u.id IN(:value:)', {'=',1}, range => [0,1e6], join => ',', process => \&subst_user_id ],
+    ],
+  },
+);
+
+
+# the uid filter for votelist/vnlist/wishlist
+my $UID_FILTER = [ 'int' => 'uid :op: :value:', {qw|= =|}, range => [0,1e6], process => \&subst_user_id ];
 
 my %GET_VOTELIST = (
   islist  => 1,
@@ -895,6 +914,7 @@ my %GET = (
   release   => \%GET_RELEASE,
   producer  => \%GET_PRODUCER,
   character => \%GET_CHARACTER,
+  user      => \%GET_USER,
   votelist  => \%GET_VOTELIST,
   vnlist    => \%GET_VNLIST,
   wishlist  => \%GET_WISHLIST,

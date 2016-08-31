@@ -1176,6 +1176,53 @@ however still required.<br />
 </table>
 
 
+:SUBSUB:get user
+<p>Returned members:</p>
+<table style="margin: 5px 2%; width: 95%">
+ <thead><tr>
+  <td style="width: 80px">Member</td>
+  <td style="width: 50px">Flag</td>
+  <td style="width: 90px">Type</td>
+  <td style="width: 40px">null</td>
+  <td>Description</td>
+ </tr></thead>
+ <tr class="odd">
+  <td>id</td>
+  <td>basic</td>
+  <td>integer</td>
+  <td>no</td>
+  <td>User ID</td>
+ </tr>
+ <tr>
+  <td>username</td>
+  <td>basic</td>
+  <td>string</td>
+  <td>no</td>
+  <td></td>
+ </tr>
+</table>
+<p>The returned list is always sorted on the 'id' field.</p><br />
+
+<p>The following filters are recognised:</p>
+<table style="margin: 5px 2%; width: 95%">
+ <thead><tr>
+  <td style="width: 80px">Field</td>
+  <td style="width: 90px">Value</td>
+  <td style="width: 90px">Operators</td>
+  <td>&nbsp;</td>
+ </tr></thead>
+ <tr class="odd">
+  <td>id</td>
+  <td>integer<br />array of integers</td>
+  <td>=</td>
+  <td>This filter must be present. The special value '0' is recognized as the currently logged in user.</td>
+ </tr>
+</table>
+<p>
+ Note: Internally, the user with id '0' is reserved for the "deleted" user.
+</p>
+
+
 :SUBSUB:get votelist
 <p>Returned members:</p>
 <table style="margin: 5px 2%; width: 95%">
@@ -1515,6 +1562,7 @@ however still required.<br />
  <li>Added "screens" flag and member to "get vn"</li>
  <li>Added "vns" flag and member to "get character"</li>
  <li>Allow sorting "get vn" on popularity, rating and votecount</li>
+ <li>Added basic "get user" command</li>
 </ul>
 <b>2.23</b>
 <ul>
