@@ -11,7 +11,7 @@
 
 :SUB:Tags
 <p>
- <b>URL:</b> <a href="http://vndb.org/api/tags.json.gz">http://vndb.org/api/tags.json.gz</a><br />
+ <b>URL:</b> <a href="https://vndb.org/api/tags.json.gz">https://vndb.org/api/tags.json.gz</a><br />
  <b>Updated:</b> Every 24 hours.<br />
  <b>Size:</b> ~190 KiB compressed, ~650 KiB uncompressed.<br />
  This dump includes information about all (approved) VN tags in the JSON
@@ -82,7 +82,7 @@
 
 :SUB:Traits
 <p>
- <b>URL:</b> <a href="http://vndb.org/api/traits.json.gz">http://vndb.org/api/traits.json.gz</a><br />
+ <b>URL:</b> <a href="https://vndb.org/api/traits.json.gz">https://vndb.org/api/traits.json.gz</a><br />
  <b>Updated:</b> Every 24 hours.<br />
  <b>Size:</b> ~220 KiB compressed, ~680 KiB uncompressed.<br />
  This dump includes information about all (approved) character traits in the
@@ -150,7 +150,7 @@
 
 :SUB:Votes
 <p>
- <b>URL:</b> <a href="http://vndb.org/api/votes.gz">http://vndb.org/api/votes.gz</a><br />
+ <b>URL:</b> <a href="https://vndb.org/api/votes.gz">https://vndb.org/api/votes.gz</a><br />
  <b>Updated:</b> Every 24 hours.<br />
  <b>Size:</b> ~1.2 MiB compressed, ~3.5 MiB uncompressed.<br />
  This dump contains the VN votes of all users who did not mark their vote list
