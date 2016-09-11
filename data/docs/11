@@ -470,7 +470,8 @@ however still required.<br />
    "id", integer<br />
    "relation", string, relation to the VN<br />
    "title", string, (romaji) title<br />
-   "original", string, original/official title, can be <b>null</b>.
+   "original", string, original/official title, can be <b>null</b><br />
+   "official", boolean.
   </td>
  </tr>
  <tr>
@@ -1563,6 +1564,7 @@ however still required.<br />
  <li>Added "vns" flag and member to "get character"</li>
  <li>Allow sorting "get vn" on popularity, rating and votecount</li>
  <li>Added basic "get user" command</li>
+ <li>Added "official" field to "get vn relations"</li>
 </ul>
 <b>2.23</b>
 <ul>

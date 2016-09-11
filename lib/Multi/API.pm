@@ -385,7 +385,6 @@ my %GET_VN = (
   sql     => 'SELECT %s FROM vn v WHERE NOT v.hidden AND (%s) %s',
   select  => 'v.id',
   proc    => sub {
-    delete $_[0]{latest};
     $_[0]{id} *= 1
   },
   sortdef => 'id',
@@ -451,7 +450,7 @@ my %GET_VN = (
       ]],
     },
     relations => {
-      fetch => [[ 'id', 'SELECT vr.id AS vid, v.id, vr.relation, v.title, v.original FROM vn_relations vr
+      fetch => [[ 'id', 'SELECT vr.id AS vid, v.id, vr.relation, v.title, v.original, vr.official FROM vn_relations vr
                      JOIN vn v ON v.id = vr.vid WHERE vr.id IN(%s)',
         sub { my($r, $n) = @_;
           for my $i (@$r) {
@@ -460,6 +459,7 @@ my %GET_VN = (
           for (@$n) {
             $_->{id} *= 1;
             $_->{original} ||= undef;
+            $_->{official} = $_->{official} =~ /t/ ? TRUE : FALSE,
             delete $_->{vid};
           }
         }
@@ -555,7 +555,6 @@ my %GET_RELEASE = (
     released => 'r.released %s',
   },
   proc    => sub {
-    delete $_[0]{latest};
     $_[0]{id} *= 1
   },
   flags => {
@@ -685,7 +684,6 @@ my %GET_PRODUCER = (
   sql     => 'SELECT %s FROM producers p WHERE NOT p.hidden AND (%s) %s',
   select  => 'p.id',
   proc    => sub {
-    delete $_[0]{latest};
     $_[0]{id} *= 1
   },
   sortdef => 'id',
@@ -759,7 +757,6 @@ my %GET_CHARACTER = (
   sql     => 'SELECT %s FROM chars c WHERE NOT c.hidden AND (%s) %s',
   select  => 'c.id',
   proc    => sub {
-    delete $_[0]{latest};
     $_[0]{id} *= 1
   },
   sortdef => 'id',
