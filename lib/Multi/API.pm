@@ -1070,6 +1070,7 @@ sub get_mainsql {
   return cerr $c, needlogin => 'Not logged in as a user' if !$sql && !$c->{uid};
   $sql = $type->{sqluser} if $c->{uid} && $type->{sqluser};
 
+  no if $] >= 5.022, warnings => 'redundant';
   cpg $c, sprintf($sql, $select, $where, $last, $c->{uid}), \@placeholders, sub {
     my @res = $_[0]->rowsAsHashes;
     $get->{more} = pop(@res)&&1 if @res > $get->{opt}{results};

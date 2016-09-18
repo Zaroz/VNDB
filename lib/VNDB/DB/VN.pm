@@ -111,6 +111,7 @@ sub dbVNGet {
       qq|(SELECT AVG(tvh.rating) FROM tags_vn_inherit tvh WHERE tvh.tag IN($tag_ids) AND tvh.vid = v.id AND spoiler <= $o{tagspoil} GROUP BY tvh.vid) AS tagscore| : (),
   );
 
+  no if $] >= 5.022, warnings => 'redundant';
   my $order = sprintf {
     id       => 'v.id %s',
     rel      => 'v.c_released %s, v.title ASC',

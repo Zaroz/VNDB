@@ -303,6 +303,7 @@ sub dbWishListGet {
     push @join, 'JOIN vn v ON v.id = wl.vid';
   }
 
+  no if $] >= 5.022, warnings => 'redundant';
   my $order = sprintf  {
     title => 'v.title %s',
     added => 'wl.added %s',
