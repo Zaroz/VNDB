@@ -521,7 +521,7 @@ sub command {
 
   my $id = lc $irc->nick_ident($nick);
   if($cmd->[0] && !grep $id eq lc $_, @{$O{masters}}) {
-    $irc->send_msg(PRIVMSG => $chan, 'I am not your master!');
+    $irc->send_msg(PRIVMSG => $chan, 'You are not my master!');
     return 1;
   }
   $cmd->[2]->($nick, $chan, $arg);
