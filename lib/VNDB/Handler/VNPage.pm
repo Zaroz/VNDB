@@ -462,7 +462,7 @@ sub page {
    }
   end 'div'; # /mainbox
 
-  my $chars = $self->dbCharGet(vid => $v->{id}, what => "seiyuu vns($v->{id})".($char ? ' extended traits' : ''), results => 100);
+  my $chars = $self->dbCharGet(vid => $v->{id}, what => "seiyuu vns($v->{id})".($char ? ' extended traits' : ''), results => 500);
   if(@$chars || $self->authCan('edit')) {
     clearfloat; # fix tabs placement when tags are hidden
     ul class => 'maintabs notfirst';

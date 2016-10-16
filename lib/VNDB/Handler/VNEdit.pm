@@ -91,7 +91,7 @@ sub edit {
     || $vid && (($v->{locked} || $v->{hidden}) && !$self->authCan('dbmod'));
 
   my $r = $v ? $self->dbReleaseGet(vid => $v->{id}) : [];
-  my $chars = $v ? $self->dbCharGet(vid => $v->{id}, results => 100) : [];
+  my $chars = $v ? $self->dbCharGet(vid => $v->{id}, results => 500) : [];
 
   my %b4 = !$vid ? () : (
     (map { $_ => $v->{$_} } qw|title original desc alias length l_wp l_encubed l_renai image img_nsfw ihid ilock|),
