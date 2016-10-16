@@ -920,6 +920,7 @@ sub _charsum {
       div class => 'charsum_bubble'.($has_spoilers ? ' '.charspoil(_charspoillvl $v->{id}, $c) : '');
        div class => 'name';
         i $self->{char_roles}{$c->{role}}[0];
+        cssicon "gen $c->{gender}", $self->{genders}{$c->{gender}} if $c->{gender} ne 'unknown';
         a href => "/c$c->{id}", title => $c->{original}||$c->{name}, $c->{name};
        end;
        if(@{$c->{seiyuu}}) {
