@@ -10,6 +10,7 @@ use VNDB::Func;
 TUWF::register(
   qr{p([1-9]\d*)/rg}               => \&rg,
   qr{p([1-9]\d*)(?:\.([1-9]\d*))?} => \&page,
+  qr{p/add}                        => \&addform,
   qr{p(?:([1-9]\d*)(?:\.([1-9]\d*))?/edit|/new)}
     => \&edit,
   qr{p/([a-z0]|all)}               => \&list,
@@ -194,10 +195,73 @@ sub _releases {
 }
 
 
+sub addform {
+  my $self = shift;
+  return $self->htmlDenied if !$self->authCan('edit');
+
+  my $frm;
+  my $l = [];
+  if($self->reqMethod eq 'POST') {
+    return if !$self->authCheckCode;
+    $frm = $self->formValidate(
+      { post => 'name',          maxlength => 200 },
+      { post => 'original',      required  => 0, maxlength => 200,  default => '' },
+      { post => 'alias',         required  => 0, maxlength => 500,  default => '' },
+      { post => 'continue_ign',required => 0 },
+    );
+
+    # look for duplicates
+    if(!$frm->{_err} && !$frm->{continue_ign}) {
+      $l = $self->dbProducerGet(search => $frm->{name}, what => 'extended', results => 50, inc_hidden => 1);
+      push @$l, @{$self->dbProducerGet(search => $frm->{original}, what => 'extended', results => 50, inc_hidden => 1)} if $frm->{original};
+      $_ && push @$l, @{$self->dbProducerGet(search => $_, what => 'extended', results => 50, inc_hidden => 1)} for(split /\s*,\s*/, $frm->{alias});
+      my %ids = map +($_->{id}, $_), @$l;
+      $l = [ map $ids{$_}, sort { $ids{$a}{name} cmp $ids{$b}{name} } keys %ids ];
+    }
+
+    return edit($self, undef, undef, 1) if !@$l && !$frm->{_err};
+  }
+
+  $self->htmlHeader(title => 'Add a new producer', noindex => 1);
+  if(@$l) {
+    div class => 'mainbox';
+     h1 'Possible duplicates found';
+     div class => 'warning';
+      p;
+       txt 'The following is a list of producers that match the name(s) you gave.'
+         .' Please check this list to avoid creating a duplicate producer entry.'
+         .' Be especially wary of items that have been deleted! To see why an entry has been deleted, click on its title.';
+       br; br;
+       txt 'To add the producer anyway, hit the "Continue and ignore duplicates" button below.';
+      end;
+     end;
+     ul;
+      for(@$l) {
+        li;
+         a href => "/p$_->{id}", title => $_->{original}||$_->{name}, "p$_->{id}: ".shorten($_->{name}, 50);
+         b class => 'standout', ' deleted' if $_->{hidden};
+        end;
+      }
+     end;
+    end 'div';
+  }
+
+  $self->htmlForm({ frm => $frm, action => '/p/add', continue => @$l ? 2 : 1 },
+  vn_add => [ 'Add a new producer',
+    [ input  => name => 'Name (romaji)', short => 'name' ],
+    [ input  => name => 'Original name', short => 'original' ],
+    [ static => content => 'The original name of the producer, leave blank if it is already in the Latin alphabet.' ],
+    [ input  => name => 'Aliases', short => 'alias', width => 400 ],
+    [ static => content => '(Un)official aliases, separated by a comma.' ],
+  ]);
+  $self->htmlFooter;
+}
+
+
 # pid as argument = edit producer
 # no arguments = add new producer
 sub edit {
-  my($self, $pid, $rev) = @_;
+  my($self, $pid, $rev, $nosubmit) = @_;
 
   my $p = $pid && $self->dbProducerGetRev(id => $pid, what => 'extended relations', rev => $rev)->[0];
   return $self->resNotFound if $pid && !$p->{id};
@@ -214,22 +278,22 @@ sub edit {
   my $frm;
 
   if($self->reqMethod eq 'POST') {
-    return if !$self->authCheckCode;
+    return if !$nosubmit && !$self->authCheckCode;
     $frm = $self->formValidate(
-      { post => 'type',          enum      => [ keys %{$self->{producer_types}} ] },
+      { post => 'type',          required  => !$nosubmit, enum => [ keys %{$self->{producer_types}} ] },
       { post => 'name',          maxlength => 200 },
       { post => 'original',      required  => 0, maxlength => 200,  default => '' },
       { post => 'alias',         required  => 0, maxlength => 500,  default => '' },
-      { post => 'lang',          enum      => [ keys %{$self->{languages}} ] },
+      { post => 'lang',          required  => !$nosubmit, enum => [ keys %{$self->{languages}} ] },
       { post => 'website',       required  => 0, maxlength => 250,  default => '', template => 'weburl' },
       { post => 'l_wp',          required  => 0, maxlength => 150,  default => '' },
       { post => 'desc',          required  => 0, maxlength => 5000, default => '' },
       { post => 'prodrelations', required  => 0, maxlength => 5000, default => '' },
-      { post => 'editsum',       template => 'editsum' },
+      { post => 'editsum',       required  => !$nosubmit, template => 'editsum' },
       { post => 'ihid',          required  => 0 },
       { post => 'ilock',         required  => 0 },
     );
-    if(!$frm->{_err}) {
+    if(!$nosubmit && !$frm->{_err}) {
       # parse
       my $relations = [ map { /^([a-z]+),([0-9]+),(.+)$/ && (!$pid || $2 != $pid) ? [ $1, $2, $3 ] : () } split /\|\|\|/, $frm->{prodrelations} ];
 

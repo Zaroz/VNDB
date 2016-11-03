@@ -96,10 +96,10 @@ sub _menu {
        a href => '/g/links?u='.$self->authInfo->{id}, 'My Tags'; br;
        br;
        if($self->authCan('edit')) {
-         a href => '/v/add',    'Add Visual Novel'; br;
-         a href => '/p/new',    'Add Producer'; br;
-         a href => '/s/new',    'Add Staff'; br;
-         a href => '/c/new',    'Add Character'; br;
+         a href => '/v/add', 'Add Visual Novel'; br;
+         a href => '/p/add', 'Add Producer'; br;
+         a href => '/s/new', 'Add Staff'; br;
+         a href => '/c/new', 'Add Character'; br;
        }
        br;
        a href => "$uid/logout", 'Logout';

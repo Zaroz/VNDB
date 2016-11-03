@@ -8,7 +8,7 @@ use Exporter 'import';
 our @EXPORT = qw|dbProducerGet dbProducerGetRev dbProducerRevisionInsert|;
 
 
-# options: results, page, id, search, char, sort
+# options: results, page, id, search, char, sort, inc_hidden
 # what: extended relations relgraph
 sub dbProducerGet {
   my $self = shift;
@@ -22,7 +22,7 @@ sub dbProducerGet {
   $o{search} =~ s/%//g if $o{search};
 
   my %where = (
-    !$o{id} ? (
+    !$o{id} && !$o{inc_hidden} ? (
       'p.hidden = FALSE' => 1 ) : (),
     $o{id} ? (
       'p.id IN(!l)' => [ ref $o{id} ? $o{id} : [$o{id}] ] ) : (),
