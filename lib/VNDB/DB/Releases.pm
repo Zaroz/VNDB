@@ -45,7 +45,7 @@ sub dbReleaseFilters {
 
 
 # Options: id vid pid released page results what med sort reverse date_before date_after
-#   plat lang olang type minage search resolution freeware doujin voiced ani_story ani_ero
+#   plat lang olang type minage search resolution freeware doujin voiced ani_story ani_ero hidden_only
 # What: extended vn producers platforms media affiliates
 # Sort: title released minage
 sub dbReleaseGet {
@@ -55,10 +55,11 @@ sub dbReleaseGet {
   $o{what} ||= '';
 
   my @where = (
-    !$o{id}                 ? ( 'r.hidden = FALSE' => 0       ) : (),
-    $o{id}                  ? ( 'r.id = ?'         => $o{id}  ) : (),
-    $o{vid}                 ? ( 'rv.vid IN(!l)'    => [ ref $o{vid} ? $o{vid} : [$o{vid}] ] ) : (),
-    $o{pid}                 ? ( 'rp.pid = ?'       => $o{pid} ) : (),
+    !$o{id} && !$o{hidden_only} ? ( 'r.hidden = FALSE' => 0 ) : (),
+    $o{hidden_only} ? ('r.hidden = TRUE' => 1) : (),
+    $o{id}  ? ( 'r.id = ?'         => $o{id}  ) : (),
+    $o{vid} ? ( 'rv.vid IN(!l)'    => [ ref $o{vid} ? $o{vid} : [$o{vid}] ] ) : (),
+    $o{pid} ? ( 'rp.pid = ?'       => $o{pid} ) : (),
     $self->dbReleaseFilters(%o),
   );
 

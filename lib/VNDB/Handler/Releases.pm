@@ -370,6 +370,7 @@ sub edit {
   $self->htmlMainTabs('r', $r, $copy ? 'copy' : 'edit') if $rid;
   $self->htmlMainTabs('v', $v, 'edit') if $vid;
   $self->htmlEditMessage('r', $r, $title, $copy);
+  _listrel($self, $vid) if $vid && $self->reqMethod ne 'POST';
   _form($self, $r, $v, $frm, $copy);
   $self->htmlFooter;
 }
@@ -467,6 +468,28 @@ sub _form {
   );
 }
 
+sub _listrel {
+  my($self, $vid) = @_;
+  my $l = $self->dbReleaseGet(vid => $vid, hidden_only => 1, results => 50);
+  return if !@$l;
+  div class => 'mainbox';
+   h1 'Deleted releases';
+   div class => 'warning';
+    p q{This visual novel has releases that have been deleted before. Please
+     review this list to make sure you're not adding a release that has already
+     been deleted before.};
+    br;
+    ul;
+     for(@$l) {
+       li;
+        txt '['.join(',', @{$_->{languages}}).'] ';
+        a href => "/r$_->{id}", title => $_->{original}||$_->{title}, "$_->{title} (r$_->{id})";
+       end;
+     }
+    end;
+   end;
+  end;
+}
 
 sub browse {
   my $self = shift;
